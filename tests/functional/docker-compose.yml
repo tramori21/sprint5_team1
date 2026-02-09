@@ -1,0 +1,44 @@
+﻿services:
+  elasticsearch:
+    image: elasticsearch:8.13.4
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    ports:
+      - "9200:9200"
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  api:
+    build:
+      context: ../..
+      dockerfile: Dockerfile
+    environment:
+      - PYTHONUNBUFFERED=1
+    depends_on:
+      - elasticsearch
+      - redis
+    ports:
+      - "8000:8000"
+
+  tests:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    working_dir: /app
+    environment:
+      - API_HOST=http://api:8000
+      - ES_HOST=http://elasticsearch:9200
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - PYTHONPATH=/app/tests/functional:/app/tests/functional/src
+    volumes:
+      - ../..:/app
+    depends_on:
+      - api
+      - elasticsearch
+      - redis

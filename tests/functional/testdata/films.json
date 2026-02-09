@@ -1,0 +1,4 @@
+[
+  { "id": "film-1", "title": "The Matrix", "imdb_rating": 8.7, "persons": ["person-1"] },
+  { "id": "film-2", "title": "John Wick", "imdb_rating": 7.4, "persons": ["person-1"] }
+]
